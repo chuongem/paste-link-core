@@ -23,25 +23,26 @@ Trang thai:
 
 ## 0. Project Foundation
 
-- [ ] Khoi tao Laravel project cho backend API
-- [ ] Cau hinh `.env.example`
-- [ ] Cau hinh Dockerfile cho Laravel app
-- [ ] Cau hinh `docker-compose.yml`
-- [ ] Tao service MySQL trong Docker
-- [ ] Tao service Redis trong Docker
-- [ ] Tao service queue worker
+- [x] Khoi tao Laravel project cho backend API
+- [x] Cau hinh `.env.example`
+- [x] Cau hinh Dockerfile cho Laravel app
+- [x] Cau hinh `docker-compose.yml`
+- [x] Tao service MySQL trong Docker
+- [x] Tao service Redis trong Docker
+- [x] Tao service queue worker
 - [ ] Tao service Horizon dashboard
-- [ ] Cau hinh storage local cho moi truong dev
-- [ ] Cau hinh S3-compatible storage qua env
-- [ ] Thiet lap coding standard / formatter
-- [ ] Thiet lap PHPUnit / Pest test runner
-- [ ] Thiet lap health check API
-- [ ] Tao file `openapi.yml`
-- [ ] Cau hinh Swagger UI doc endpoint
+  - Note: Horizon can cai trong Docker/Linux sau; Composer tren Windows dang thieu `pcntl` va `posix`.
+- [x] Cau hinh storage local cho moi truong dev
+- [x] Cau hinh S3-compatible storage qua env
+- [x] Thiet lap coding standard / formatter
+- [x] Thiet lap PHPUnit / Pest test runner
+- [x] Thiet lap health check API
+- [x] Tao file `openapi.yml`
+- [x] Cau hinh Swagger UI doc endpoint
 - [ ] Them convention response JSON chung
 - [ ] Them convention error response chung
 - [ ] Them request validation pattern
-- [ ] Them API version prefix, vi du `/api/v1`
+- [x] Them API version prefix, vi du `/api/v1`
 
 ---
 
@@ -54,7 +55,7 @@ Trang thai:
 - [ ] Dang xuat
 - [ ] Lay thong tin user hien tai
 - [ ] Refresh / rotate API token neu can
-- [ ] Bao ve API bang Laravel Sanctum
+- [x] Bao ve API bang Laravel Sanctum
 - [ ] Gioi han upload / AI feature theo user
 - [ ] Them role field neu can cho admin sau nay
 - [ ] Viet OpenAPI schema cho auth APIs
@@ -65,7 +66,7 @@ API du kien:
 - [ ] `POST /api/v1/auth/register`
 - [ ] `POST /api/v1/auth/login`
 - [ ] `POST /api/v1/auth/logout`
-- [ ] `GET /api/v1/me`
+- [x] `GET /api/v1/me`
 
 ---
 
@@ -504,10 +505,10 @@ API du kien:
 
 ## 17. OpenAPI / Swagger Documentation
 
-- [ ] Dinh nghia global OpenAPI info trong `openapi.yml`
-- [ ] Dinh nghia server URLs
-- [ ] Dinh nghia bearer auth security scheme
-- [ ] Dinh nghia standard error schema
+- [x] Dinh nghia global OpenAPI info trong `openapi.yml`
+- [x] Dinh nghia server URLs
+- [x] Dinh nghia bearer auth security scheme
+- [x] Dinh nghia standard error schema
 - [ ] Dinh nghia pagination schema
 - [ ] Dinh nghia auth schemas
 - [ ] Dinh nghia file schemas
