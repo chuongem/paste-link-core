@@ -3,11 +3,12 @@ services:
     build:
       context: .
       dockerfile: Dockerfile
-    container_name: pastelink-app
     working_dir: /var/www/html
     volumes:
       - ./:/var/www/html
       - app-vendor:/var/www/html/vendor
+    networks:
+      - sail
     depends_on:
       - mysql
       # - redis
@@ -24,17 +25,28 @@ services:
   #     - app
 
   mysql:
-    image: mysql:8.4
-    container_name: pastelink-mysql
+    image: 'mysql/mysql-server:8.0'
     ports:
-      - "3306:3306"
+        - '${FORWARD_DB_PORT:-3306}:3306'
     environment:
-      MYSQL_DATABASE: pastelink
-      MYSQL_USER: pastelink
-      MYSQL_PASSWORD: secret
-      MYSQL_ROOT_PASSWORD: root
+        MYSQL_ROOT_PASSWORD: '${DB_PASSWORD}'
+        MYSQL_ROOT_HOST: '%'
+        MYSQL_DATABASE: '${DB_DATABASE}'
+        MYSQL_USER: '${DB_USERNAME}'
+        MYSQL_PASSWORD: '${DB_PASSWORD}'
+        MYSQL_ALLOW_EMPTY_PASSWORD: 1
     volumes:
-      - mysql-data:/var/lib/mysql
+        - 'sail-mysql:/var/lib/mysql'
+    networks:
+        - sail
+    healthcheck:
+        test:
+            - CMD
+            - mysqladmin
+            - ping
+            - '-p${DB_PASSWORD}'
+        retries: 3
+        timeout: 5s
 
   # redis:
   #   image: redis:7.4-alpine
@@ -57,7 +69,11 @@ services:
   #     - redis
   #     - mysql
 
+networks:
+  sail:
+    driver: bridge
+
 volumes:
-  mysql-data:
+  sail-mysql:
   app-vendor:
   # queue-vendor:
