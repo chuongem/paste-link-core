@@ -31,6 +31,7 @@ Trang thai:
 - [x] Tao service Redis trong Docker
 - [x] Tao service queue worker
 - [!] Tao service Horizon dashboard
+- [ ] Can nhac them Laravel Horizon khi queue jobs tang nhieu
   - Note: Dang bi chan vi `laravel/horizon` chua cai duoc tren Windows CLI thieu `pcntl`/`posix`; can cai trong Docker/Linux hoac cho ban Horizon tuong thich Laravel 13.
 - [x] Cau hinh storage local cho moi truong dev
 - [x] Cau hinh S3-compatible storage qua env
