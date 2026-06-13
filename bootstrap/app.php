@@ -3,7 +3,9 @@
 use Illuminate\Foundation\Application;
 use Illuminate\Foundation\Configuration\Exceptions;
 use Illuminate\Foundation\Configuration\Middleware;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Symfony\Component\HttpFoundation\Response;
 
 return Application::configure(basePath: dirname(__DIR__))
     ->withRouting(
@@ -19,4 +21,28 @@ return Application::configure(basePath: dirname(__DIR__))
         $exceptions->shouldRenderJsonWhen(
             fn (Request $request) => $request->is('api/*'),
         );
+
+        $exceptions->respond(function (Response $response, Throwable $exception, Request $request) {
+            if (! $request->is('api/*') || ! $response instanceof JsonResponse || $response->isSuccessful()) {
+                return $response;
+            }
+
+            $data = $response->getData(true);
+            $message = (string) ($data['message'] ?? Response::$statusTexts[$response->getStatusCode()] ?? 'Request failed.');
+
+            $payload = [
+                'success' => false,
+                'message' => $message,
+            ];
+
+            if (isset($data['errors'])) {
+                $payload['errors'] = $data['errors'];
+            }
+
+            if (isset($data['code'])) {
+                $payload['code'] = $data['code'];
+            }
+
+            return response()->json($payload, $response->getStatusCode());
+        });
     })->create();

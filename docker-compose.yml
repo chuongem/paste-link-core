@@ -11,7 +11,7 @@ services:
       - sail
     depends_on:
       - mysql
-      # - redis
+      - redis
 
   # nginx:
   #   image: nginx:1.27-alpine
@@ -48,26 +48,37 @@ services:
         retries: 3
         timeout: 5s
 
-  # redis:
-  #   image: redis:7.4-alpine
-  #   container_name: pastelink-redis
-  #   ports:
-  #     - "6379:6379"
+  redis:
+    image: redis:7.4-alpine
+    ports:
+      - '${FORWARD_REDIS_PORT:-6379}:6379'
+    volumes:
+      - sail-redis:/data
+    networks:
+      - sail
+    healthcheck:
+      test:
+        - CMD
+        - redis-cli
+        - ping
+      retries: 3
+      timeout: 5s
 
-  # queue:
-  #   build:
-  #     context: .
-  #     dockerfile: Dockerfile
-  #   container_name: pastelink-queue
-  #   command: php artisan queue:work redis --sleep=3 --tries=3 --timeout=120
-  #   working_dir: /var/www/html
-  #   volumes:
-  #     - ./:/var/www/html
-  #     - queue-vendor:/var/www/html/vendor
-  #   depends_on:
-  #     - app
-  #     - redis
-  #     - mysql
+  queue:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    command: php artisan queue:work redis --sleep=3 --tries=3 --timeout=120
+    working_dir: /var/www/html
+    volumes:
+      - ./:/var/www/html
+      - app-vendor:/var/www/html/vendor
+    networks:
+      - sail
+    depends_on:
+      - app
+      - redis
+      - mysql
 
 networks:
   sail:
@@ -75,5 +86,5 @@ networks:
 
 volumes:
   sail-mysql:
+  sail-redis:
   app-vendor:
-  # queue-vendor:

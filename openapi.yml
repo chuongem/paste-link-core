@@ -41,7 +41,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/User'
+                $ref: '#/components/schemas/UserResponse'
         '401':
           $ref: '#/components/responses/Unauthenticated'
 components:
@@ -61,15 +61,43 @@ components:
     HealthResponse:
       type: object
       required:
-        - status
-        - service
+        - success
+        - message
+        - data
       properties:
-        status:
+        success:
+          type: boolean
+          example: true
+        message:
           type: string
-          example: ok
-        service:
+          example: OK
+        data:
+          type: object
+          required:
+            - status
+            - service
+          properties:
+            status:
+              type: string
+              example: ok
+            service:
+              type: string
+              example: paste-link-core
+    UserResponse:
+      type: object
+      required:
+        - success
+        - message
+        - data
+      properties:
+        success:
+          type: boolean
+          example: true
+        message:
           type: string
-          example: paste-link-core
+          example: OK
+        data:
+          $ref: '#/components/schemas/User'
     User:
       type: object
       required:
@@ -90,8 +118,18 @@ components:
     ErrorResponse:
       type: object
       required:
+        - success
         - message
       properties:
+        success:
+          type: boolean
+          example: false
         message:
           type: string
           example: Unauthenticated.
+        code:
+          type: string
+          example: VALIDATION_ERROR
+        errors:
+          type: object
+          additionalProperties: true

@@ -30,8 +30,8 @@ Trang thai:
 - [x] Tao service MySQL trong Docker
 - [x] Tao service Redis trong Docker
 - [x] Tao service queue worker
-- [ ] Tao service Horizon dashboard
-  - Note: Horizon can cai trong Docker/Linux sau; Composer tren Windows dang thieu `pcntl` va `posix`.
+- [!] Tao service Horizon dashboard
+  - Note: Dang bi chan vi `laravel/horizon` chua cai duoc tren Windows CLI thieu `pcntl`/`posix`; can cai trong Docker/Linux hoac cho ban Horizon tuong thich Laravel 13.
 - [x] Cau hinh storage local cho moi truong dev
 - [x] Cau hinh S3-compatible storage qua env
 - [x] Thiet lap coding standard / formatter
@@ -39,9 +39,9 @@ Trang thai:
 - [x] Thiet lap health check API
 - [x] Tao file `openapi.yml`
 - [x] Cau hinh Swagger UI doc endpoint
-- [ ] Them convention response JSON chung
-- [ ] Them convention error response chung
-- [ ] Them request validation pattern
+- [x] Them convention response JSON chung
+- [x] Them convention error response chung
+- [x] Them request validation pattern
 - [x] Them API version prefix, vi du `/api/v1`
 
 ---
