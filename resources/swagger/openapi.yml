@@ -1,0 +1,324 @@
+openapi: 3.1.0
+info:
+  title: PasteLink Core API
+  version: 0.1.0
+  description: Backend API for PasteLink file sharing and AI-powered content processing.
+servers:
+  - url: http://localhost:8080/api/v1
+    description: Local Docker
+  - url: http://localhost:8000/api/v1
+    description: Local Artisan
+tags:
+  - name: System
+    description: System and operational endpoints.
+  - name: Auth
+    description: Authentication endpoints.
+paths:
+  /health:
+    get:
+      tags:
+        - System
+      summary: Check API health
+      operationId: getHealth
+      responses:
+        '200':
+          description: API is available.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HealthResponse'
+  /auth/register:
+    post:
+      tags:
+        - Auth
+      summary: Register a new user
+      operationId: registerUser
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RegisterRequest'
+      responses:
+        '201':
+          description: User registered and token issued.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AuthTokenResponse'
+        '422':
+          $ref: '#/components/responses/ValidationError'
+  /auth/login:
+    post:
+      tags:
+        - Auth
+      summary: Log in a user
+      operationId: loginUser
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/LoginRequest'
+      responses:
+        '200':
+          description: User logged in and token issued.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AuthTokenResponse'
+        '401':
+          description: The supplied credentials are invalid.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '422':
+          $ref: '#/components/responses/ValidationError'
+  /auth/google/redirect:
+    get:
+      tags:
+        - Auth
+      summary: Redirect to Google OAuth
+      operationId: redirectToGoogleOAuth
+      responses:
+        '302':
+          description: Redirects the client to the Google OAuth consent screen.
+  /auth/google/callback:
+    get:
+      tags:
+        - Auth
+      summary: Handle Google OAuth callback
+      operationId: handleGoogleOAuthCallback
+      parameters:
+        - name: code
+          in: query
+          required: true
+          schema:
+            type: string
+          description: Authorization code returned by Google.
+      responses:
+        '200':
+          description: Google account linked or registered and token issued.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AuthTokenResponse'
+        '422':
+          description: Google did not provide the required user email.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+  /auth/logout:
+    post:
+      tags:
+        - Auth
+      summary: Log out the current token
+      operationId: logoutUser
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: Current access token was revoked.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SuccessResponse'
+        '401':
+          $ref: '#/components/responses/Unauthenticated'
+  /me:
+    get:
+      tags:
+        - Auth
+      summary: Get authenticated user
+      operationId: getCurrentUser
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: Current user.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserResponse'
+        '401':
+          $ref: '#/components/responses/Unauthenticated'
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: Sanctum token
+  responses:
+    Unauthenticated:
+      description: The request is missing a valid authentication token.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+    ValidationError:
+      description: The request payload failed validation.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+  schemas:
+    SuccessResponse:
+      type: object
+      required:
+        - success
+        - message
+      properties:
+        success:
+          type: boolean
+          example: true
+        message:
+          type: string
+          example: Logged out successfully.
+    HealthResponse:
+      type: object
+      required:
+        - success
+        - message
+        - data
+      properties:
+        success:
+          type: boolean
+          example: true
+        message:
+          type: string
+          example: OK
+        data:
+          type: object
+          required:
+            - status
+            - service
+          properties:
+            status:
+              type: string
+              example: ok
+            service:
+              type: string
+              example: paste-link-core
+    UserResponse:
+      type: object
+      required:
+        - success
+        - message
+        - data
+      properties:
+        success:
+          type: boolean
+          example: true
+        message:
+          type: string
+          example: OK
+        data:
+          $ref: '#/components/schemas/User'
+    AuthTokenResponse:
+      type: object
+      required:
+        - success
+        - message
+        - data
+      properties:
+        success:
+          type: boolean
+          example: true
+        message:
+          type: string
+          example: Logged in successfully.
+        data:
+          type: object
+          required:
+            - user
+            - access_token
+            - token_type
+          properties:
+            user:
+              $ref: '#/components/schemas/User'
+            access_token:
+              type: string
+              example: 1|plain-text-token
+            token_type:
+              type: string
+              example: Bearer
+    RegisterRequest:
+      type: object
+      required:
+        - name
+        - email
+        - password
+        - password_confirmation
+      properties:
+        name:
+          type: string
+          example: Demo User
+        email:
+          type: string
+          format: email
+          example: demo@gmail.com
+        google_avatar_url:
+          type:
+            - string
+            - 'null'
+          format: uri
+          example: https://lh3.googleusercontent.com/avatar.png
+        password:
+          type: string
+          format: password
+          example: password
+        password_confirmation:
+          type: string
+          format: password
+          example: password
+    LoginRequest:
+      type: object
+      required:
+        - email
+        - password
+      properties:
+        email:
+          type: string
+          format: email
+          example: demo@gmail.com
+        password:
+          type: string
+          format: password
+          example: password
+    User:
+      type: object
+      required:
+        - id
+        - name
+        - email
+      properties:
+        id:
+          type: integer
+          example: 1
+        name:
+          type: string
+          example: Demo User
+        email:
+          type: string
+          format: email
+          example: demo@gmail.com
+    ErrorResponse:
+      type: object
+      required:
+        - success
+        - message
+      properties:
+        success:
+          type: boolean
+          example: false
+        message:
+          type: string
+          example: Unauthenticated.
+        code:
+          type: string
+          example: VALIDATION_ERROR
+        errors:
+          type: object
+          additionalProperties: true

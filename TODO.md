@@ -49,24 +49,28 @@ Trang thai:
 
 ## 1. Authentication and Users
 
-- [ ] Tao migration `users`
-- [ ] Tao model `User`
-- [ ] Dang ky tai khoan
-- [ ] Dang nhap
-- [ ] Dang xuat
-- [ ] Lay thong tin user hien tai
+- [x] Tao migration `users`
+- [x] Tao model `User`
+- [x] Dang ky tai khoan
+- [x] Dang ky / dang nhap bang Google OAuth
+- [x] Gui email thong bao dang ky thanh cong
+- [x] Dang nhap
+- [x] Dang xuat
+- [x] Lay thong tin user hien tai
 - [ ] Refresh / rotate API token neu can
 - [x] Bao ve API bang Laravel Sanctum
 - [ ] Gioi han upload / AI feature theo user
 - [ ] Them role field neu can cho admin sau nay
-- [ ] Viet OpenAPI schema cho auth APIs
-- [ ] Viet test cho auth APIs
+- [x] Viet OpenAPI schema cho auth APIs
+- [x] Viet test cho auth APIs
 
 API du kien:
 
-- [ ] `POST /api/v1/auth/register`
-- [ ] `POST /api/v1/auth/login`
-- [ ] `POST /api/v1/auth/logout`
+- [x] `POST /api/v1/auth/register`
+- [x] `POST /api/v1/auth/login`
+- [x] `GET /api/v1/auth/google/redirect`
+- [x] `GET /api/v1/auth/google/callback`
+- [x] `POST /api/v1/auth/logout`
 - [x] `GET /api/v1/me`
 
 ---
