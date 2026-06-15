@@ -5,17 +5,9 @@ use Illuminate\Support\Facades\Route;
 Route::get('/', function () {
     return response()->json([
         'service' => 'paste-link-core',
-        'docs' => url('/docs'),
+        'docs' => url('/swagger'),
         'health' => url('/api/v1/health'),
     ]);
 });
 
-Route::get('/docs', function () {
-    return view('swagger');
-});
-
-Route::get('/openapi.yml', function () {
-    return response()->file(base_path('openapi.yml'), [
-        'Content-Type' => 'application/yaml',
-    ]);
-});
+Route::redirect('/swagger', '/api/documentation');
