@@ -35,6 +35,4 @@ RUN composer dump-autoload --optimize \
     && php artisan package:discover --ansi \
     && chown -R www-data:www-data storage bootstrap/cache
 
-EXPOSE 9000
-
-CMD ["php-fpm"]
+CMD ["sh", "docker/start.sh"]
