@@ -9,5 +9,3 @@ Route::get('/', function () {
         'health' => url('/api/v1/health'),
     ]);
 });
-
-Route::redirect('/swagger', '/api/documentation');

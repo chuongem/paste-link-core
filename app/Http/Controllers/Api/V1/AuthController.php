@@ -5,13 +5,12 @@ namespace App\Http\Controllers\Api\V1;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Auth\LoginRequest;
 use App\Http\Requests\Auth\RegisterRequest;
-use App\Mail\RegisteredSuccessfully;
 use App\Models\User;
+use App\Services\MailtrapSender;
 use App\Support\ApiResponse;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
-use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Str;
 use Laravel\Socialite\Facades\Socialite;
 use Laravel\Socialite\Two\User as SocialiteUser;
@@ -19,6 +18,10 @@ use Symfony\Component\HttpFoundation\RedirectResponse;
 
 class AuthController extends Controller
 {
+    public function __construct(
+        private readonly MailtrapSender $mailtrapSender,
+    ) {}
+
     public function register(RegisterRequest $request): JsonResponse
     {
         /** @var array{name: string, email: string, password: string} $data */
@@ -26,7 +29,7 @@ class AuthController extends Controller
 
         $user = User::query()->create($data);
 
-        Mail::to($user->email)->send(new RegisteredSuccessfully($user));
+        $this->mailtrapSender->sendRegistrationEmail($user);
 
         return ApiResponse::success(
             data: $this->tokenPayload($user),
@@ -133,7 +136,7 @@ class AuthController extends Controller
             'email_verified_at' => now(),
         ]);
 
-        Mail::to($user->email)->send(new RegisteredSuccessfully($user));
+        $this->mailtrapSender->sendRegistrationEmail($user);
 
         return $user;
     }

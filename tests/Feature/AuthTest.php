@@ -2,11 +2,10 @@
 
 namespace Tests\Feature;
 
-use App\Mail\RegisteredSuccessfully;
 use App\Models\User;
+use App\Services\MailtrapSender;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Hash;
-use Illuminate\Support\Facades\Mail;
 use Laravel\Socialite\Facades\Socialite;
 use Laravel\Socialite\Two\User as SocialiteUser;
 use Mockery;
@@ -18,7 +17,11 @@ class AuthTest extends TestCase
 
     public function test_user_can_register_and_receive_token(): void
     {
-        Mail::fake();
+        $this->mock(MailtrapSender::class, function ($mock): void {
+            $mock->shouldReceive('sendRegistrationEmail')
+                ->once()
+                ->withArgs(fn (User $user): bool => $user->email === 'demo@gmail.com');
+        });
 
         $response = $this->postJson('/api/v1/auth/register', [
             'name' => 'Demo User',
@@ -45,17 +48,13 @@ class AuthTest extends TestCase
         ]);
 
         $this->assertTrue(Hash::check('password', User::query()->firstOrFail()->password));
-
-        Mail::assertSent(
-            RegisteredSuccessfully::class,
-            fn (RegisteredSuccessfully $mail): bool => $mail->hasTo('demo@gmail.com')
-                && $mail->user->is(User::query()->firstOrFail()),
-        );
     }
 
     public function test_register_requires_unique_email_and_confirmed_password(): void
     {
-        Mail::fake();
+        $this->mock(MailtrapSender::class, function ($mock): void {
+            $mock->shouldNotReceive('sendRegistrationEmail');
+        });
 
         User::factory()->create(['email' => 'demo@pastelink.app']);
 
@@ -70,8 +69,6 @@ class AuthTest extends TestCase
             ->assertJsonPath('success', false)
             ->assertJsonPath('code', 'VALIDATION_ERROR')
             ->assertJsonValidationErrors(['email', 'password']);
-
-        Mail::assertNothingSent();
     }
 
     public function test_user_can_login_and_access_current_user_endpoint(): void
@@ -135,7 +132,11 @@ class AuthTest extends TestCase
 
     public function test_google_callback_creates_user_sends_mail_and_returns_token(): void
     {
-        Mail::fake();
+        $this->mock(MailtrapSender::class, function ($mock): void {
+            $mock->shouldReceive('sendRegistrationEmail')
+                ->once()
+                ->withArgs(fn (User $user): bool => $user->email === 'google-user@gmail.com');
+        });
 
         $this->mockGoogleCallbackUser(
             id: 'google-123',
@@ -166,16 +167,13 @@ class AuthTest extends TestCase
             'google_id' => 'google-123',
             'google_avatar_url' => 'https://lh3.googleusercontent.com/avatar.png',
         ]);
-
-        Mail::assertSent(
-            RegisteredSuccessfully::class,
-            fn (RegisteredSuccessfully $mail): bool => $mail->hasTo('google-user@gmail.com'),
-        );
     }
 
     public function test_google_callback_links_existing_user_by_email_without_resending_registration_mail(): void
     {
-        Mail::fake();
+        $this->mock(MailtrapSender::class, function ($mock): void {
+            $mock->shouldNotReceive('sendRegistrationEmail');
+        });
 
         $existingUser = User::factory()->create([
             'name' => 'Existing User',
@@ -205,13 +203,13 @@ class AuthTest extends TestCase
             'google_id' => 'google-existing-123',
             'google_avatar_url' => 'https://lh3.googleusercontent.com/existing.png',
         ]);
-
-        Mail::assertNothingSent();
     }
 
     public function test_google_callback_requires_email_from_google(): void
     {
-        Mail::fake();
+        $this->mock(MailtrapSender::class, function ($mock): void {
+            $mock->shouldNotReceive('sendRegistrationEmail');
+        });
 
         $this->mockGoogleCallbackUser(
             id: 'google-no-email',
@@ -229,7 +227,6 @@ class AuthTest extends TestCase
             ]);
 
         $this->assertDatabaseCount('users', 0);
-        Mail::assertNothingSent();
     }
 
     public function test_user_can_logout_current_token(): void
