@@ -54,6 +54,10 @@ Trang thai:
 - [x] Dang ky tai khoan
 - [x] Dang ky / dang nhap bang Google OAuth
 - [x] Gui email thong bao dang ky thanh cong
+- [x] Tao mailable `RegisteredSuccessfully`
+- [x] Tao email template welcome sau dang ky
+- [x] Tao mail service `MailtrapSender` cho registration email va test email
+- [x] Them cau hinh Mailtrap SMTP mau vao `.env.example`
 - [x] Dang nhap
 - [x] Dang xuat
 - [x] Lay thong tin user hien tai
@@ -62,7 +66,7 @@ Trang thai:
 - [ ] Gioi han upload / AI feature theo user
 - [ ] Them role field neu can cho admin sau nay
 - [x] Viet OpenAPI schema cho auth APIs
-- [x] Viet test cho auth APIs
+- [x] Viet test cho auth APIs va registration email
 
 API du kien:
 
