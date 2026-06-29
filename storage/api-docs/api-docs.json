@@ -248,49 +248,7 @@
                 "tags": [
                     "Files"
                 ],
-                "summary": "Upload a single file",
-                "operationId": "uploadFile",
-                "security": [
-                    {
-                        "bearerAuth": []
-                    }
-                ],
-                "requestBody": {
-                    "required": true,
-                    "content": {
-                        "multipart/form-data": {
-                            "schema": {
-                                "$ref": "#/components/schemas/UploadFileRequest"
-                            }
-                        }
-                    }
-                },
-                "responses": {
-                    "201": {
-                        "description": "File uploaded successfully.",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/FileResponse"
-                                }
-                            }
-                        }
-                    },
-                    "401": {
-                        "$ref": "#/components/responses/Unauthenticated"
-                    },
-                    "422": {
-                        "$ref": "#/components/responses/ValidationError"
-                    }
-                }
-            }
-        },
-        "/files/batch": {
-            "post": {
-                "tags": [
-                    "Files"
-                ],
-                "summary": "Upload multiple files",
+                "summary": "Upload one or more files",
                 "operationId": "uploadFiles",
                 "security": [
                     {
@@ -309,7 +267,7 @@
                 },
                 "responses": {
                     "201": {
-                        "description": "Files uploaded successfully.",
+                        "description": "One or more files uploaded successfully.",
                         "content": {
                             "application/json": {
                                 "schema": {
@@ -471,27 +429,6 @@
                     }
                 }
             },
-            "FileResponse": {
-                "type": "object",
-                "required": [
-                    "success",
-                    "message",
-                    "data"
-                ],
-                "properties": {
-                    "success": {
-                        "type": "boolean",
-                        "example": true
-                    },
-                    "message": {
-                        "type": "string",
-                        "example": "File uploaded successfully."
-                    },
-                    "data": {
-                        "$ref": "#/components/schemas/File"
-                    }
-                }
-            },
             "FileListResponse": {
                 "type": "object",
                 "required": [
@@ -529,19 +466,6 @@
                     }
                 }
             },
-            "UploadFileRequest": {
-                "type": "object",
-                "required": [
-                    "file"
-                ],
-                "properties": {
-                    "file": {
-                        "type": "string",
-                        "format": "binary",
-                        "description": "Single file, up to 300MB."
-                    }
-                }
-            },
             "UploadFilesRequest": {
                 "type": "object",
                 "required": [
@@ -551,7 +475,7 @@
                     "files": {
                         "type": "array",
                         "minItems": 1,
-                        "description": "Multiple files with a combined upload session limit of 300MB.",
+                        "description": "One or more files with a combined upload session limit of 300MB.",
                         "items": {
                             "type": "string",
                             "format": "binary"

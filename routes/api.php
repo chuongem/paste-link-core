@@ -28,6 +28,5 @@ Route::prefix('v1')->group(function (): void {
 
     Route::middleware('auth:sanctum')->prefix('files')->group(function (): void {
         Route::post('/', [FileController::class, 'store']);
-        Route::post('/batch', [FileController::class, 'storeMany']);
     });
 });

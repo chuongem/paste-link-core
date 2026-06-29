@@ -84,7 +84,7 @@ API du kien:
 - [x] Tao migration `files`
 - [x] Tao model `File`
 - [x] Tao file upload service
-- [x] Ho tro upload single file
+- [x] Ho tro upload single file qua multi payload
 - [x] Ho tro upload multiple files
 - [ ] Ho tro file tu file picker
 - [ ] Ho tro file tu drag and drop o API level
@@ -112,7 +112,6 @@ API du kien:
 API du kien:
 
 - [ ] `POST /api/v1/files`
-- [ ] `POST /api/v1/files/batch`
 - [ ] `GET /api/v1/files`
 - [ ] `GET /api/v1/files/{id}`
 - [ ] `DELETE /api/v1/files/{id}`

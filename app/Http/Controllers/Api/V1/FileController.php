@@ -3,7 +3,6 @@
 namespace App\Http\Controllers\Api\V1;
 
 use App\Http\Controllers\Controller;
-use App\Http\Requests\UploadFileRequest;
 use App\Http\Requests\UploadFilesRequest;
 use App\Models\File;
 use App\Services\FileUploadService;
@@ -17,26 +16,9 @@ class FileController extends Controller
     ) {}
 
     /**
-     * Upload one file for the authenticated user.
+     * Upload one or more files for the authenticated user.
      */
-    public function store(UploadFileRequest $request): JsonResponse
-    {
-        // Resolve the authenticated owner for the uploaded file record.
-        $user = $request->user();
-
-        $file = $this->fileUploadService->store($user, $request->file('file'));
-
-        return ApiResponse::success(
-            data: $this->filePayload($file),
-            message: 'File uploaded successfully.',
-            status: 201,
-        );
-    }
-
-    /**
-     * Upload multiple files for the authenticated user.
-     */
-    public function storeMany(UploadFilesRequest $request): JsonResponse
+    public function store(UploadFilesRequest $request): JsonResponse
     {
         // Resolve the authenticated owner for all uploaded file records.
         $user = $request->user();
