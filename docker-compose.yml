@@ -10,6 +10,7 @@ services:
     volumes:
       - ./:/var/www/html
       - app-vendor:/var/www/html/vendor
+      - ./docker/php/uploads.ini:/usr/local/etc/php/conf.d/uploads.ini:ro
     networks:
       - sail
     depends_on:

@@ -81,33 +81,33 @@ API du kien:
 
 ## 2. File Upload Core
 
-- [ ] Tao migration `files`
-- [ ] Tao model `File`
-- [ ] Tao file upload service
-- [ ] Ho tro upload single file
-- [ ] Ho tro upload multiple files
+- [x] Tao migration `files`
+- [x] Tao model `File`
+- [x] Tao file upload service
+- [x] Ho tro upload single file
+- [x] Ho tro upload multiple files
 - [ ] Ho tro file tu file picker
 - [ ] Ho tro file tu drag and drop o API level
 - [ ] Ho tro file tu clipboard paste o API level
-- [ ] Validate file size theo upload session toi da 300MB
+- [x] Validate file size theo upload session toi da 300MB
 - [ ] Validate MIME type / extension
-- [ ] Luu metadata file goc
-- [ ] Luu ten file goc
+- [x] Luu metadata file goc
+- [x] Luu ten file goc
 - [ ] Luu ten file hien thi sau khi rut gon
-- [ ] Luu kich thuoc file
-- [ ] Luu MIME type
+- [x] Luu kich thuoc file
+- [x] Luu MIME type
 - [ ] Luu extension
-- [ ] Luu storage disk
-- [ ] Luu storage path
-- [ ] Luu owner user id
-- [ ] Tao date-based storage path `uploads/YYYY/MM/DD`
+- [x] Luu storage disk
+- [x] Luu storage path
+- [x] Luu owner user id
+- [x] Tao date-based storage path `uploads/YYYY/MM/DD`
 - [ ] Rut gon filename dai hon nguong cau hinh
 - [ ] Tao service xoa file vat ly khi record bi xoa
 - [ ] Tao endpoint danh sach file cua user
 - [ ] Tao endpoint chi tiet file
 - [ ] Tao endpoint xoa file
 - [ ] Viet OpenAPI schema cho file APIs
-- [ ] Viet test cho upload APIs
+- [x] Viet test cho upload APIs
 
 API du kien:
 

@@ -13,6 +13,8 @@ tags:
     description: System and operational endpoints.
   - name: Auth
     description: Authentication endpoints.
+  - name: Files
+    description: File upload and file management endpoints.
 paths:
   /health:
     get:
@@ -144,6 +146,56 @@ paths:
                 $ref: '#/components/schemas/UserResponse'
         '401':
           $ref: '#/components/responses/Unauthenticated'
+  /files:
+    post:
+      tags:
+        - Files
+      summary: Upload a single file
+      operationId: uploadFile
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/UploadFileRequest'
+      responses:
+        '201':
+          description: File uploaded successfully.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FileResponse'
+        '401':
+          $ref: '#/components/responses/Unauthenticated'
+        '422':
+          $ref: '#/components/responses/ValidationError'
+  /files/batch:
+    post:
+      tags:
+        - Files
+      summary: Upload multiple files
+      operationId: uploadFiles
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/UploadFilesRequest'
+      responses:
+        '201':
+          description: Files uploaded successfully.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FileListResponse'
+        '401':
+          $ref: '#/components/responses/Unauthenticated'
+        '422':
+          $ref: '#/components/responses/ValidationError'
 components:
   securitySchemes:
     bearerAuth:
@@ -244,6 +296,68 @@ components:
             token_type:
               type: string
               example: Bearer
+    FileResponse:
+      type: object
+      required:
+        - success
+        - message
+        - data
+      properties:
+        success:
+          type: boolean
+          example: true
+        message:
+          type: string
+          example: File uploaded successfully.
+        data:
+          $ref: '#/components/schemas/File'
+    FileListResponse:
+      type: object
+      required:
+        - success
+        - message
+        - data
+        - meta
+      properties:
+        success:
+          type: boolean
+          example: true
+        message:
+          type: string
+          example: Files uploaded successfully.
+        data:
+          type: array
+          items:
+            $ref: '#/components/schemas/File'
+        meta:
+          type: object
+          required:
+            - count
+          properties:
+            count:
+              type: integer
+              example: 2
+    UploadFileRequest:
+      type: object
+      required:
+        - file
+      properties:
+        file:
+          type: string
+          format: binary
+          description: Single file, up to 300MB.
+    UploadFilesRequest:
+      type: object
+      required:
+        - files
+      properties:
+        files:
+          type: array
+          minItems: 1
+          description: Multiple files with a combined upload session limit of 300MB.
+          items:
+            type: string
+            format: binary
     RegisterRequest:
       type: object
       required:
@@ -304,6 +418,50 @@ components:
           type: string
           format: email
           example: demo@gmail.com
+    File:
+      type: object
+      required:
+        - id
+        - disk
+        - path
+        - original_name
+        - stored_name
+        - size
+        - created_at
+      properties:
+        id:
+          type: integer
+          example: 1
+        disk:
+          type: string
+          example: public
+        path:
+          type: string
+          example: uploads/2026/06/29/045c6f3f-c550-4791-b19e-6579517c6be5.pdf
+        url:
+          type:
+            - string
+            - 'null'
+          format: uri
+          example: http://localhost:8080/storage/uploads/2026/06/29/045c6f3f-c550-4791-b19e-6579517c6be5.pdf
+        original_name:
+          type: string
+          example: document.pdf
+        stored_name:
+          type: string
+          example: 045c6f3f-c550-4791-b19e-6579517c6be5.pdf
+        mime_type:
+          type:
+            - string
+            - 'null'
+          example: application/pdf
+        size:
+          type: integer
+          example: 131072
+        created_at:
+          type: string
+          format: date-time
+          example: 2026-06-29T10:30:00.000000Z
     ErrorResponse:
       type: object
       required:
