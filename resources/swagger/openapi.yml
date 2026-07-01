@@ -375,6 +375,7 @@ components:
         - id
         - disk
         - path
+        - full_path
         - original_name
         - stored_name
         - size
@@ -388,19 +389,26 @@ components:
           example: public
         path:
           type: string
-          example: uploads/2026/06/29/045c6f3f-c550-4791-b19e-6579517c6be5.pdf
+          example: uploads/2026/06/29/aB3xY9kLm2Qp.pdf
         url:
           type:
             - string
             - 'null'
           format: uri
-          example: http://localhost:8080/storage/uploads/2026/06/29/045c6f3f-c550-4791-b19e-6579517c6be5.pdf
+          example: http://localhost:8080/storage/uploads/2026/06/29/aB3xY9kLm2Qp.pdf
+        full_path:
+          type:
+            - string
+            - 'null'
+          format: uri
+          description: Absolute public URL that the frontend can use directly.
+          example: https://paste-link-core.onrender.com/storage/uploads/2026/06/29/aB3xY9kLm2Qp.pdf
         original_name:
           type: string
           example: document.pdf
         stored_name:
           type: string
-          example: 045c6f3f-c550-4791-b19e-6579517c6be5.pdf
+          example: aB3xY9kLm2Qp.pdf
         mime_type:
           type:
             - string

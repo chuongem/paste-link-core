@@ -8,6 +8,11 @@ php artisan view:cache
 # Regenerate the OpenAPI JSON that L5-Swagger serves.
 php artisan swagger:generate
 
+# Ensure uploaded files saved on the public disk are reachable from /storage.
+mkdir -p storage/app/public bootstrap/cache
+php artisan storage:link --force
+chmod -R ug+rwX storage bootstrap/cache public/storage || true
+
 # Apply pending migrations without interactive confirmation.
 php artisan migrate --force
 

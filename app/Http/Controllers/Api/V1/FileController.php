@@ -45,6 +45,7 @@ class FileController extends Controller
             'disk' => $file->disk,
             'path' => $file->path,
             'url' => $this->fileUploadService->url($file),
+            'full_path' => $this->fileUploadService->fullPath($file),
             'original_name' => $file->original_name,
             'stored_name' => $file->stored_name,
             'mime_type' => $file->mime_type,

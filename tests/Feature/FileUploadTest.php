@@ -17,7 +17,7 @@ class FileUploadTest extends TestCase
     {
         parent::setUp();
 
-        Config::set('filesystems.default', 'public');
+        Config::set('filesystems.uploads_disk', 'public');
         Storage::fake('public');
     }
 
@@ -40,12 +40,13 @@ class FileUploadTest extends TestCase
             ->assertJsonPath('data.0.mime_type', 'application/pdf')
             ->assertJsonStructure([
                 'data' => [
-                    ['id', 'disk', 'path', 'url', 'original_name', 'stored_name', 'mime_type', 'size', 'created_at'],
+                    ['id', 'disk', 'path', 'url', 'full_path', 'original_name', 'stored_name', 'mime_type', 'size', 'created_at'],
                 ],
             ])
             ->json('data.0.path');
 
         $this->assertStringStartsWith('uploads/'.now()->format('Y/m/d/'), $path);
+        $this->assertMatchesRegularExpression('/\/[A-Za-z0-9]{12}\.pdf$/', $path);
         Storage::disk('public')->assertExists($path);
 
         $this->assertDatabaseHas('files', [

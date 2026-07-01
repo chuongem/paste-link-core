@@ -14,9 +14,9 @@ class FileUploadService
 
     public function store(User $user, UploadedFile $uploadedFile): File
     {
-        $disk = (string) config('filesystems.default', 'local');
+        $disk = (string) config('filesystems.uploads_disk', 'public');
         $directory = 'uploads/'.now()->format('Y/m/d');
-        $storedName = Str::uuid()->toString().'.'.$uploadedFile->extension();
+        $storedName = $this->uniqueStoredName($disk, $directory, $uploadedFile);
         $path = $uploadedFile->storeAs($directory, $storedName, $disk);
 
         return File::query()->create([
@@ -47,5 +47,32 @@ class FileUploadService
         $disk = Storage::disk($file->disk);
 
         return method_exists($disk, 'url') ? $disk->url($file->path) : null;
+    }
+
+    public function fullPath(File $file): ?string
+    {
+        $url = $this->url($file);
+
+        if ($url === null) {
+            return null;
+        }
+
+        return Str::startsWith($url, ['http://', 'https://'])
+            ? $url
+            : url($url);
+    }
+
+    private function uniqueStoredName(string $disk, string $directory, UploadedFile $uploadedFile): string
+    {
+        $extension = $uploadedFile->extension()
+            ?: $uploadedFile->getClientOriginalExtension()
+            ?: 'bin';
+
+        do {
+            $storedName = Str::random(12).'.'.$extension;
+            $path = "{$directory}/{$storedName}";
+        } while (Storage::disk($disk)->exists($path));
+
+        return $storedName;
     }
 }
