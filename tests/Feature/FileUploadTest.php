@@ -17,8 +17,10 @@ class FileUploadTest extends TestCase
     {
         parent::setUp();
 
-        Config::set('filesystems.uploads_disk', 'public');
-        Storage::fake('public');
+        Config::set('app.url', 'https://paste-link-core.onrender.com');
+        Config::set('filesystems.uploads_disk', 'public_root');
+        Config::set('filesystems.disks.public_root.url', 'https://paste-link-core.onrender.com');
+        Storage::fake('public_root');
     }
 
     public function test_authenticated_user_can_upload_one_file_with_multi_payload(): void
@@ -35,9 +37,12 @@ class FileUploadTest extends TestCase
             ->assertJsonPath('success', true)
             ->assertJsonPath('message', 'Files uploaded successfully.')
             ->assertJsonPath('meta.count', 1)
-            ->assertJsonPath('data.0.disk', 'public')
+            ->assertJsonPath('data.0.disk', 'public_root')
             ->assertJsonPath('data.0.original_name', 'document.pdf')
             ->assertJsonPath('data.0.mime_type', 'application/pdf')
+            ->assertJsonPath('data.0.path', now()->format('Ymd').'-document.pdf')
+            ->assertJsonPath('data.0.url', 'https://paste-link-core.onrender.com/'.now()->format('Ymd').'-document.pdf')
+            ->assertJsonPath('data.0.full_path', 'https://paste-link-core.onrender.com/'.now()->format('Ymd').'-document.pdf')
             ->assertJsonStructure([
                 'data' => [
                     ['id', 'disk', 'path', 'url', 'full_path', 'original_name', 'stored_name', 'mime_type', 'size', 'created_at'],
@@ -45,13 +50,12 @@ class FileUploadTest extends TestCase
             ])
             ->json('data.0.path');
 
-        $this->assertStringStartsWith('uploads/'.now()->format('Y/m/d/'), $path);
-        $this->assertMatchesRegularExpression('/\/[A-Za-z0-9]{12}\.pdf$/', $path);
-        Storage::disk('public')->assertExists($path);
+        $this->assertSame(now()->format('Ymd').'-document.pdf', $path);
+        Storage::disk('public_root')->assertExists($path);
 
         $this->assertDatabaseHas('files', [
             'user_id' => $user->id,
-            'disk' => 'public',
+            'disk' => 'public_root',
             'path' => $path,
             'original_name' => 'document.pdf',
             'mime_type' => 'application/pdf',
@@ -79,7 +83,7 @@ class FileUploadTest extends TestCase
             ->assertJsonPath('data.1.original_name', 'b.jpg');
 
         foreach ($response->json('data') as $file) {
-            Storage::disk('public')->assertExists($file['path']);
+            Storage::disk('public_root')->assertExists($file['path']);
         }
 
         $this->assertDatabaseCount('files', 2);

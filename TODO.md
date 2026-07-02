@@ -100,7 +100,7 @@ API du kien:
 - [x] Luu storage disk
 - [x] Luu storage path
 - [x] Luu owner user id
-- [x] Tao date-based storage path `uploads/YYYY/MM/DD`
+- [x] Tao date-based storage path `uploads/YYYYMMDD-filename`
 - [ ] Rut gon filename dai hon nguong cau hinh
 - [ ] Tao service xoa file vat ly khi record bi xoa
 - [ ] Tao endpoint danh sach file cua user

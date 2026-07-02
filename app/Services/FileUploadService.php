@@ -14,10 +14,9 @@ class FileUploadService
 
     public function store(User $user, UploadedFile $uploadedFile): File
     {
-        $disk = (string) config('filesystems.uploads_disk', 'public');
-        $directory = 'uploads/'.now()->format('Y/m/d');
-        $storedName = $this->uniqueStoredName($disk, $directory, $uploadedFile);
-        $path = $uploadedFile->storeAs($directory, $storedName, $disk);
+        $disk = (string) config('filesystems.uploads_disk', 'public_root');
+        $storedName = $this->uniqueStoredName($disk, $uploadedFile);
+        $path = $uploadedFile->storeAs('', $storedName, $disk);
 
         return File::query()->create([
             'user_id' => $user->id,
@@ -44,6 +43,12 @@ class FileUploadService
 
     public function url(File $file): ?string
     {
+        $configuredUrl = config("filesystems.disks.{$file->disk}.url");
+
+        if (is_string($configuredUrl) && $configuredUrl !== '') {
+            return rtrim($configuredUrl, '/').'/'.ltrim($file->path, '/');
+        }
+
         $disk = Storage::disk($file->disk);
 
         return method_exists($disk, 'url') ? $disk->url($file->path) : null;
@@ -62,15 +67,20 @@ class FileUploadService
             : url($url);
     }
 
-    private function uniqueStoredName(string $disk, string $directory, UploadedFile $uploadedFile): string
+    private function uniqueStoredName(string $disk, UploadedFile $uploadedFile): string
     {
         $extension = $uploadedFile->extension()
             ?: $uploadedFile->getClientOriginalExtension()
             ?: 'bin';
+        $originalBaseName = pathinfo($uploadedFile->getClientOriginalName(), PATHINFO_FILENAME);
+        $safeBaseName = Str::slug($originalBaseName) ?: 'file';
+        $baseName = now()->format('Ymd').'-'.$safeBaseName;
 
+        $suffix = null;
         do {
-            $storedName = Str::random(12).'.'.$extension;
-            $path = "{$directory}/{$storedName}";
+            $storedName = $baseName.($suffix ? "-{$suffix}" : '').'.'.$extension;
+            $path = $storedName;
+            $suffix = Str::lower(Str::random(6));
         } while (Storage::disk($disk)->exists($path));
 
         return $storedName;

@@ -9,9 +9,9 @@ php artisan view:cache
 php artisan swagger:generate
 
 # Ensure uploaded files saved on the public disk are reachable from /storage.
-mkdir -p storage/app/public bootstrap/cache
+mkdir -p storage/app/public bootstrap/cache public
 php artisan storage:link --force
-chmod -R ug+rwX storage bootstrap/cache public/storage || true
+chmod -R ug+rwX storage bootstrap/cache public || true
 
 # Apply pending migrations without interactive confirmation.
 php artisan migrate --force
