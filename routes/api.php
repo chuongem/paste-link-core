@@ -27,6 +27,9 @@ Route::prefix('v1')->group(function (): void {
     });
 
     Route::middleware('auth:sanctum')->prefix('files')->group(function (): void {
+        Route::get('/', [FileController::class, 'index']);
         Route::post('/', [FileController::class, 'store']);
+        Route::get('/{id}', [FileController::class, 'show'])->whereNumber('id');
+        Route::delete('/{id}', [FileController::class, 'destroy'])->whereNumber('id');
     });
 });

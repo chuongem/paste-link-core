@@ -86,6 +86,7 @@ API du kien:
 - [x] Tao file upload service
 - [x] Ho tro upload single file qua multi payload
 - [x] Ho tro upload multiple files
+- [x] Zip multiple files trong mot upload session thanh mot file `.zip` co link tai truc tiep
 - [ ] Ho tro file tu file picker
 - [ ] Ho tro file tu drag and drop o API level
 - [ ] Ho tro file tu clipboard paste o API level
@@ -102,19 +103,19 @@ API du kien:
 - [x] Luu owner user id
 - [x] Tao date-based storage path `uploads/YYYYMMDD-filename`
 - [ ] Rut gon filename dai hon nguong cau hinh
-- [ ] Tao service xoa file vat ly khi record bi xoa
-- [ ] Tao endpoint danh sach file cua user
-- [ ] Tao endpoint chi tiet file
-- [ ] Tao endpoint xoa file
-- [ ] Viet OpenAPI schema cho file APIs
+- [x] Tao service xoa file vat ly khi record bi xoa
+- [x] Tao endpoint danh sach file cua user
+- [x] Tao endpoint chi tiet file
+- [x] Tao endpoint xoa file
+- [x] Viet OpenAPI schema cho file APIs
 - [x] Viet test cho upload APIs
 
 API du kien:
 
-- [ ] `POST /api/v1/files`
-- [ ] `GET /api/v1/files`
-- [ ] `GET /api/v1/files/{id}`
-- [ ] `DELETE /api/v1/files/{id}`
+- [x] `POST /api/v1/files`
+- [x] `GET /api/v1/files`
+- [x] `GET /api/v1/files/{id}`
+- [x] `DELETE /api/v1/files/{id}`
 
 ---
 

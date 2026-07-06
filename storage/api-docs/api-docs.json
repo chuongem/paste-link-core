@@ -244,11 +244,39 @@
             }
         },
         "/files": {
+            "get": {
+                "tags": [
+                    "Files"
+                ],
+                "summary": "List authenticated user's files",
+                "operationId": "listFiles",
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Files owned by the authenticated user.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/FileListResponse"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "$ref": "#/components/responses/Unauthenticated"
+                    }
+                }
+            },
             "post": {
                 "tags": [
                     "Files"
                 ],
                 "summary": "Upload one or more files",
+                "description": "Uploading multiple files in one request creates a single ZIP archive and returns a direct download URL for that archive.",
                 "operationId": "uploadFiles",
                 "security": [
                     {
@@ -284,6 +312,78 @@
                     }
                 }
             }
+        },
+        "/files/{id}": {
+            "get": {
+                "tags": [
+                    "Files"
+                ],
+                "summary": "Get file details",
+                "operationId": "getFile",
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ],
+                "parameters": [
+                    {
+                        "$ref": "#/components/parameters/FileId"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "File details.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/FileResponse"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "$ref": "#/components/responses/Unauthenticated"
+                    },
+                    "404": {
+                        "$ref": "#/components/responses/FileNotFound"
+                    }
+                }
+            },
+            "delete": {
+                "tags": [
+                    "Files"
+                ],
+                "summary": "Delete a file",
+                "operationId": "deleteFile",
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ],
+                "parameters": [
+                    {
+                        "$ref": "#/components/parameters/FileId"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "File record and storage object were deleted.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/SuccessResponse"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "$ref": "#/components/responses/Unauthenticated"
+                    },
+                    "404": {
+                        "$ref": "#/components/responses/FileNotFound"
+                    }
+                }
+            }
         }
     },
     "components": {
@@ -292,6 +392,18 @@
                 "type": "http",
                 "scheme": "bearer",
                 "bearerFormat": "Sanctum token"
+            }
+        },
+        "parameters": {
+            "FileId": {
+                "name": "id",
+                "in": "path",
+                "required": true,
+                "schema": {
+                    "type": "integer",
+                    "minimum": 1
+                },
+                "description": "File ID."
             }
         },
         "responses": {
@@ -307,6 +419,16 @@
             },
             "ValidationError": {
                 "description": "The request payload failed validation.",
+                "content": {
+                    "application/json": {
+                        "schema": {
+                            "$ref": "#/components/schemas/ErrorResponse"
+                        }
+                    }
+                }
+            },
+            "FileNotFound": {
+                "description": "The file does not exist or is not owned by the authenticated user.",
                 "content": {
                     "application/json": {
                         "schema": {
@@ -460,9 +582,36 @@
                         "properties": {
                             "count": {
                                 "type": "integer",
+                                "description": "Number of stored file records returned. Multiple source files are stored as one ZIP record.",
+                                "example": 2
+                            },
+                            "source_file_count": {
+                                "type": "integer",
+                                "description": "Number of original uploaded files in the request.",
                                 "example": 2
                             }
                         }
+                    }
+                }
+            },
+            "FileResponse": {
+                "type": "object",
+                "required": [
+                    "success",
+                    "message",
+                    "data"
+                ],
+                "properties": {
+                    "success": {
+                        "type": "boolean",
+                        "example": true
+                    },
+                    "message": {
+                        "type": "string",
+                        "example": "File retrieved successfully."
+                    },
+                    "data": {
+                        "$ref": "#/components/schemas/File"
                     }
                 }
             },
@@ -570,6 +719,7 @@
                     "disk",
                     "path",
                     "full_path",
+                    "download_url",
                     "original_name",
                     "stored_name",
                     "size",
@@ -604,6 +754,15 @@
                         "format": "uri",
                         "description": "Absolute public URL that the frontend can use directly.",
                         "example": "https://paste-link-core.onrender.com/20260702-document.pdf"
+                    },
+                    "download_url": {
+                        "type": [
+                            "string",
+                            "null"
+                        ],
+                        "format": "uri",
+                        "description": "Direct URL that can be opened to download the stored file or generated ZIP archive.",
+                        "example": "https://paste-link-core.onrender.com/20260702-files.zip"
                     },
                     "original_name": {
                         "type": "string",
