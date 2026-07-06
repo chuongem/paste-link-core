@@ -121,28 +121,28 @@ API du kien:
 
 ## 3. Public Share Links
 
-- [ ] Tao migration `share_links`
-- [ ] Tao model `ShareLink`
-- [ ] Sinh public code ngan, vi du `A7X29K`
-- [ ] Dam bao public code la duy nhat
-- [ ] Tao public URL `/f/{code}`
-- [ ] Gan moi file voi mot share link mac dinh
-- [ ] Tao endpoint lay thong tin public file theo code
-- [ ] Tao endpoint tai file public
-- [ ] Tao endpoint copy/open link data cho frontend
-- [ ] Tao endpoint QR code data hoac QR image
-- [ ] Them status active/inactive cho share link
-- [ ] Them soft delete neu can
-- [ ] Viet OpenAPI schema cho share link APIs
-- [ ] Viet test cho share link APIs
+- [x] Tao migration `share_links`
+- [x] Tao model `ShareLink`
+- [x] Sinh public code ngan, vi du `A7X29K`
+- [x] Dam bao public code la duy nhat
+- [x] Tao public URL `/f/{code}`
+- [x] Gan moi file voi mot share link mac dinh khi user goi endpoint tao link
+- [x] Tao endpoint lay thong tin public file theo code
+- [x] Tao endpoint tai file public
+- [x] Tao endpoint copy/open link data cho frontend
+- [x] Tao endpoint QR code data hoac QR image
+- [x] Them status active/inactive cho share link
+- [x] Them soft delete neu can
+- [x] Viet OpenAPI schema cho share link APIs
+- [x] Viet test cho share link APIs
 
 API du kien:
 
-- [ ] `POST /api/v1/files/{id}/share-links`
-- [ ] `GET /api/v1/share-links/{code}`
-- [ ] `GET /api/v1/f/{code}`
-- [ ] `GET /api/v1/f/{code}/download`
-- [ ] `GET /api/v1/f/{code}/qr-code`
+- [x] `POST /api/v1/files/{id}/share-links`
+- [x] `GET /api/v1/share-links/{code}`
+- [x] `GET /api/v1/f/{code}`
+- [x] `GET /api/v1/f/{code}/download`
+- [x] `GET /api/v1/f/{code}/qr-code`
 
 ---
 
@@ -378,15 +378,15 @@ API du kien:
 
 ### Password Protected Links
 
-- [ ] Them password hash cho share link
-- [ ] Tao endpoint verify password
-- [ ] Bao ve preview/download neu link co password
+- [x] Them password hash cho share link
+- [x] Tao endpoint verify password
+- [x] Bao ve preview/download neu link co password
 
 ### Expiring Links
 
-- [ ] Them `expires_at` cho share link
-- [ ] Enforce expired link khi preview/download
-- [ ] Ho tro options: 1 day, 7 days, 30 days
+- [x] Them `expires_at` cho share link
+- [x] Enforce expired link khi preview/download
+- [x] Ho tro dat ngay het han qua `expires_at`
 
 ### Self-Destruct Files
 
@@ -396,8 +396,10 @@ API du kien:
 
 API du kien:
 
-- [ ] `PATCH /api/v1/share-links/{id}`
-- [ ] `POST /api/v1/share-links/{code}/verify-password`
+- [x] `PATCH /api/v1/share-links/{id}`
+- [x] `DELETE /api/v1/share-links/{id}`
+- [x] `POST /api/v1/share-links/{id}/regenerate`
+- [x] `POST /api/v1/share-links/{code}/verify-password`
 
 ---
 
@@ -408,8 +410,8 @@ API du kien:
 - [ ] Luu download events
 - [ ] Luu IP hash / user agent neu phu hop
 - [ ] Luu last access time
-- [ ] Dem views
-- [ ] Dem downloads
+- [x] Dem views
+- [x] Dem downloads
 - [ ] Tao endpoint analytics cho owner
 - [ ] Khong expose analytics cho public user
 

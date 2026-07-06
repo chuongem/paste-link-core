@@ -15,6 +15,8 @@ tags:
     description: Authentication endpoints.
   - name: Files
     description: File upload and file management endpoints.
+  - name: Share Links
+    description: Public file sharing endpoints.
 paths:
   /health:
     get:
@@ -229,6 +231,203 @@ paths:
           $ref: '#/components/responses/Unauthenticated'
         '404':
           $ref: '#/components/responses/FileNotFound'
+  /files/{id}/share-links:
+    post:
+      tags:
+        - Share Links
+      summary: Create or retrieve a public share link for a file
+      operationId: createShareLink
+      security:
+        - bearerAuth: []
+      parameters:
+        - $ref: '#/components/parameters/FileId'
+      responses:
+        '201':
+          description: Share link created.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ShareLinkResponse'
+        '200':
+          description: Existing share link returned.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ShareLinkResponse'
+        '401':
+          $ref: '#/components/responses/Unauthenticated'
+        '404':
+          $ref: '#/components/responses/ShareLinkNotFound'
+  /share-links/{code}:
+    get:
+      tags:
+        - Share Links
+      summary: Get public share link metadata
+      operationId: getShareLink
+      parameters:
+        - $ref: '#/components/parameters/ShareCode'
+      responses:
+        '200':
+          description: Share link metadata.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ShareLinkResponse'
+        '404':
+          $ref: '#/components/responses/ShareLinkNotFound'
+  /share-links/{id}:
+    patch:
+      tags:
+        - Share Links
+      summary: Update share link controls
+      operationId: updateShareLink
+      security:
+        - bearerAuth: []
+      parameters:
+        - $ref: '#/components/parameters/ShareLinkId'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ShareLinkUpdateRequest'
+      responses:
+        '200':
+          description: Share link updated.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ShareLinkResponse'
+        '401':
+          $ref: '#/components/responses/Unauthenticated'
+        '404':
+          $ref: '#/components/responses/ShareLinkNotFound'
+        '422':
+          $ref: '#/components/responses/ValidationError'
+    delete:
+      tags:
+        - Share Links
+      summary: Delete share link
+      operationId: deleteShareLink
+      security:
+        - bearerAuth: []
+      parameters:
+        - $ref: '#/components/parameters/ShareLinkId'
+      responses:
+        '200':
+          description: Share link deleted.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SuccessResponse'
+        '401':
+          $ref: '#/components/responses/Unauthenticated'
+        '404':
+          $ref: '#/components/responses/ShareLinkNotFound'
+  /share-links/{id}/regenerate:
+    post:
+      tags:
+        - Share Links
+      summary: Regenerate share link code
+      operationId: regenerateShareLink
+      security:
+        - bearerAuth: []
+      parameters:
+        - $ref: '#/components/parameters/ShareLinkId'
+      responses:
+        '200':
+          description: Share link code regenerated and counters reset.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ShareLinkResponse'
+        '401':
+          $ref: '#/components/responses/Unauthenticated'
+        '404':
+          $ref: '#/components/responses/ShareLinkNotFound'
+  /share-links/{code}/verify-password:
+    post:
+      tags:
+        - Share Links
+      summary: Verify public share link password
+      operationId: verifyShareLinkPassword
+      parameters:
+        - $ref: '#/components/parameters/ShareCode'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/VerifyShareLinkPasswordRequest'
+      responses:
+        '200':
+          description: Password is valid.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/VerifyShareLinkPasswordResponse'
+        '403':
+          $ref: '#/components/responses/ShareLinkPasswordError'
+        '404':
+          $ref: '#/components/responses/ShareLinkNotFound'
+        '422':
+          $ref: '#/components/responses/ValidationError'
+  /f/{code}:
+    get:
+      tags:
+        - Share Links
+      summary: Get public file payload
+      operationId: getPublicFile
+      parameters:
+        - $ref: '#/components/parameters/ShareCode'
+      responses:
+        '200':
+          description: Public file payload for share page.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PublicFileResponse'
+        '404':
+          $ref: '#/components/responses/ShareLinkNotFound'
+        '403':
+          $ref: '#/components/responses/ShareLinkPasswordError'
+  /f/{code}/download:
+    get:
+      tags:
+        - Share Links
+      summary: Download public shared file
+      operationId: downloadPublicFile
+      parameters:
+        - $ref: '#/components/parameters/ShareCode'
+      responses:
+        '200':
+          description: Binary file download.
+          content:
+            application/octet-stream:
+              schema:
+                type: string
+                format: binary
+        '404':
+          $ref: '#/components/responses/ShareLinkNotFound'
+        '403':
+          $ref: '#/components/responses/ShareLinkPasswordError'
+  /f/{code}/qr-code:
+    get:
+      tags:
+        - Share Links
+      summary: Get QR code data for public share link
+      operationId: getPublicFileQrCode
+      parameters:
+        - $ref: '#/components/parameters/ShareCode'
+      responses:
+        '200':
+          description: QR code input data for frontend rendering.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ShareLinkQrCodeResponse'
+        '404':
+          $ref: '#/components/responses/ShareLinkNotFound'
 components:
   securitySchemes:
     bearerAuth:
@@ -244,6 +443,23 @@ components:
         type: integer
         minimum: 1
       description: File ID.
+    ShareLinkId:
+      name: id
+      in: path
+      required: true
+      schema:
+        type: integer
+        minimum: 1
+      description: Share link ID.
+    ShareCode:
+      name: code
+      in: path
+      required: true
+      schema:
+        type: string
+        minLength: 6
+        maxLength: 16
+      description: Public share code.
   responses:
     Unauthenticated:
       description: The request is missing a valid authentication token.
@@ -259,6 +475,18 @@ components:
             $ref: '#/components/schemas/ErrorResponse'
     FileNotFound:
       description: The file does not exist or is not owned by the authenticated user.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+    ShareLinkNotFound:
+      description: The share link does not exist or is not active.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+    ShareLinkPasswordError:
+      description: The share link requires a password or the supplied password is invalid.
       content:
         application/json:
           schema:
@@ -390,6 +618,136 @@ components:
           example: File retrieved successfully.
         data:
           $ref: '#/components/schemas/File'
+    ShareLinkResponse:
+      type: object
+      required:
+        - success
+        - message
+        - data
+      properties:
+        success:
+          type: boolean
+          example: true
+        message:
+          type: string
+          example: Share link created successfully.
+        data:
+          $ref: '#/components/schemas/ShareLink'
+    PublicFileResponse:
+      type: object
+      required:
+        - success
+        - message
+        - data
+      properties:
+        success:
+          type: boolean
+          example: true
+        message:
+          type: string
+          example: Public file retrieved successfully.
+        data:
+          type: object
+          required:
+            - share_link
+            - file
+          properties:
+            share_link:
+              $ref: '#/components/schemas/ShareLink'
+            file:
+              $ref: '#/components/schemas/PublicFile'
+    ShareLinkQrCodeResponse:
+      type: object
+      required:
+        - success
+        - message
+        - data
+      properties:
+        success:
+          type: boolean
+          example: true
+        message:
+          type: string
+          example: QR code data retrieved successfully.
+        data:
+          type: object
+          required:
+            - code
+            - qr_data
+            - public_url
+            - download_url
+          properties:
+            code:
+              type: string
+              example: A7X29K
+            qr_data:
+              type: string
+              format: uri
+              description: URL value that frontend can render into a QR code.
+              example: https://paste-link-core.onrender.com/api/v1/f/A7X29K
+            public_url:
+              type: string
+              format: uri
+              example: https://paste-link-core.onrender.com/api/v1/f/A7X29K
+            download_url:
+              type: string
+              format: uri
+              example: https://paste-link-core.onrender.com/api/v1/f/A7X29K/download
+    VerifyShareLinkPasswordResponse:
+      type: object
+      required:
+        - success
+        - message
+        - data
+      properties:
+        success:
+          type: boolean
+          example: true
+        message:
+          type: string
+          example: Share link password verified successfully.
+        data:
+          type: object
+          required:
+            - verified
+            - password_required
+          properties:
+            verified:
+              type: boolean
+              example: true
+            password_required:
+              type: boolean
+              example: true
+    ShareLinkUpdateRequest:
+      type: object
+      minProperties: 1
+      properties:
+        password:
+          type:
+            - string
+            - 'null'
+          minLength: 4
+          maxLength: 255
+          description: Set to null to remove the password.
+          example: secret-password
+        expires_at:
+          type:
+            - string
+            - 'null'
+          format: date-time
+          description: Future expiry timestamp. Set to null to remove expiry.
+          example: 2026-07-13T10:30:00.000000Z
+        is_active:
+          type: boolean
+          example: true
+    VerifyShareLinkPasswordRequest:
+      type: object
+      required:
+        - password
+      properties:
+        password:
+          type: string
+          example: secret-password
     UploadFilesRequest:
       type: object
       required:
@@ -522,6 +880,106 @@ components:
           type: string
           format: date-time
           example: 2026-06-29T10:30:00.000000Z
+    PublicFile:
+      type: object
+      required:
+        - id
+        - original_name
+        - stored_name
+        - size
+        - created_at
+      properties:
+        id:
+          type: integer
+          example: 1
+        original_name:
+          type: string
+          example: document.pdf
+        stored_name:
+          type: string
+          example: 20260702-document.pdf
+        mime_type:
+          type:
+            - string
+            - 'null'
+          example: application/pdf
+        size:
+          type: integer
+          example: 131072
+        created_at:
+          type: string
+          format: date-time
+          example: 2026-06-29T10:30:00.000000Z
+    ShareLink:
+      type: object
+      required:
+        - id
+        - file_id
+        - code
+        - is_active
+        - public_url
+        - download_url
+        - qr_code_url
+        - created_at
+        - file
+      properties:
+        id:
+          type: integer
+          example: 1
+        file_id:
+          type: integer
+          example: 1
+        code:
+          type: string
+          example: A7X29K
+        is_active:
+          type: boolean
+          example: true
+        password_required:
+          type: boolean
+          example: false
+        expires_at:
+          type:
+            - string
+            - 'null'
+          format: date-time
+          example: 2026-07-13T10:30:00.000000Z
+        view_count:
+          type: integer
+          example: 12
+        download_count:
+          type: integer
+          example: 3
+        last_viewed_at:
+          type:
+            - string
+            - 'null'
+          format: date-time
+          example: 2026-07-06T11:00:00.000000Z
+        last_downloaded_at:
+          type:
+            - string
+            - 'null'
+          format: date-time
+          example: 2026-07-06T11:05:00.000000Z
+        public_url:
+          type: string
+          format: uri
+          example: https://paste-link-core.onrender.com/api/v1/f/A7X29K
+        download_url:
+          type: string
+          format: uri
+          example: https://paste-link-core.onrender.com/api/v1/f/A7X29K/download
+        qr_code_url:
+          type: string
+          format: uri
+          example: https://paste-link-core.onrender.com/api/v1/f/A7X29K/qr-code
+        created_at:
+          type: string
+          format: date-time
+          example: 2026-07-06T10:30:00.000000Z
+        file:
+          $ref: '#/components/schemas/PublicFile'
     ErrorResponse:
       type: object
       required:
