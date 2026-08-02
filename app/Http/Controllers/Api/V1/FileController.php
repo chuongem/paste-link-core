@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Api\V1;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\UploadFilesRequest;
 use App\Models\File;
+use App\Services\AiUploadService;
 use App\Services\FileUploadService;
 use App\Support\ApiResponse;
 use Illuminate\Http\JsonResponse;
@@ -14,6 +15,7 @@ class FileController extends Controller
 {
     public function __construct(
         private readonly FileUploadService $fileUploadService,
+        private readonly AiUploadService $aiUploadService,
     ) {}
 
     /**
@@ -88,6 +90,41 @@ class FileController extends Controller
         $file->delete();
 
         return ApiResponse::success(message: 'File deleted successfully.');
+    }
+
+    /**
+     * Import a GetLink upload into the separate AI workspace.
+     */
+    public function sendToAi(Request $request, int $id): JsonResponse
+    {
+        $file = $this->findOwnedFile($request, $id);
+
+        if (! $file instanceof File) {
+            return $this->fileNotFoundResponse();
+        }
+
+        $upload = $this->aiUploadService->importFile($request->user(), $file);
+
+        return ApiResponse::success(
+            data: [
+                'id' => $upload->id,
+                'source_file_id' => $upload->source_file_id,
+                'source_type' => $upload->source_type,
+                'original_name' => $upload->original_name,
+                'display_name' => $upload->display_name,
+                'mime_type' => $upload->mime_type,
+                'extension' => $upload->extension,
+                'size_bytes' => $upload->size_bytes,
+                'storage_disk' => $upload->storage_disk,
+                'storage_path' => $upload->storage_path,
+                'file_kind' => $upload->file_kind,
+                'status' => $upload->status,
+                'metadata' => $upload->metadata,
+                'created_at' => $upload->created_at,
+            ],
+            message: 'File sent to AI workspace successfully.',
+            status: 201,
+        );
     }
 
     /**

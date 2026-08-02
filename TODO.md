@@ -146,37 +146,16 @@ API du kien:
 
 ---
 
-## 4. File Preview
+## 4. GetLink File Delivery Scope
 
-### Text Preview
-
-- [ ] Detect text file: `txt`, `md`, `json`
-- [ ] Tao preview noi dung text gioi han kich thuoc
-- [ ] Tao endpoint preview first section
-- [ ] Tao endpoint view full content co gioi han an toan
-- [ ] Format JSON preview neu file la JSON
-- [ ] Xu ly encoding text co ban
-
-### Audio Preview
-
-- [ ] Detect audio file: `mp3`, `wav`, `m4a`
-- [ ] Tra ve signed/public stream URL cho audio player
-- [ ] Luu metadata audio neu co
-- [ ] Tao endpoint metadata audio
-
-### Video Preview
-
-- [ ] Detect video file: `mp4`, `mov`, `webm`
-- [ ] Tra ve signed/public stream URL cho video player
-- [ ] Luu metadata video neu co
-- [ ] Tao thumbnail generation job trong tuong lai
+- [ ] Giu upload-getlink tap trung vao upload, share link, QR, download
+- [ ] Khong xu ly preview/audio/video analysis trong luong upload-getlink
+- [ ] Neu can xem file tren frontend, dung browser native hoac signed download URL don gian
+- [ ] Cho phep import file da upload sang AI workspace neu user muon phan tich
 
 API du kien:
 
-- [ ] `GET /api/v1/files/{id}/preview`
-- [ ] `GET /api/v1/files/{id}/content`
-- [ ] `GET /api/v1/f/{code}/preview`
-- [ ] `GET /api/v1/f/{code}/content`
+- [ ] `POST /api/v1/files/{id}/send-to-ai`
 
 ---
 
@@ -246,6 +225,8 @@ Top-up packages:
 Credit usage:
 
 - [ ] AI Transcript -> 300 credits
+- [ ] AI Audio Analysis -> 300 credits
+- [ ] AI Video Analysis -> 400 credits
 - [ ] AI Summary -> 100 credits
 - [ ] AI Translation -> 100 credits
 - [ ] AI Chat with File -> 50 credits
@@ -281,49 +262,153 @@ API du kien:
 
 ## 8. AI Foundation
 
+### AI Upload Workspace
+
+- [x] Tao migration `ai_uploads`
+- [x] Tao model `AiUpload`
+- [x] Upload file rieng cho tab AI, khong tu dong tao public share link
+- [x] Ho tro import file tu `files` neu user bam "Send to AI"
+- [x] Luu `user_id`
+- [x] Luu `source_file_id` nullable khi import tu upload-getlink
+- [x] Luu `source_type`: direct_upload, imported_file
+- [x] Luu `original_name`
+- [x] Luu `display_name`
+- [x] Luu `mime_type`
+- [x] Luu `extension`
+- [x] Luu `size_bytes`
+- [x] Luu `storage_disk`
+- [x] Luu `storage_path`
+- [x] Luu `checksum`
+- [x] Luu `file_kind`: text, document, audio, video, image, archive, unknown
+- [x] Luu `status`: uploaded, queued, analyzing, completed, failed
+- [x] Luu `detected_language` nullable
+- [x] Luu `metadata` JSON cho duration, dimensions, page_count, encoding, word_count
+- [x] Tao AI upload service dung storage path rieng `ai-uploads/YYYYMMDD/...`
+- [x] Validate kich thuoc AI upload theo plan/credit
+- [ ] Validate MIME/extension theo danh sach AI ho tro
+- [x] Tao endpoint upload file vao AI workspace
+- [x] Tao endpoint danh sach AI uploads cua user
+- [x] Tao endpoint chi tiet AI upload
+- [x] Tao endpoint xoa AI upload va output lien quan
+
 ### AI Job Infrastructure
 
-- [ ] Tao migration `ai_jobs`
-- [ ] Tao model `AiJob`
+- [x] Tao migration `ai_jobs`
+- [x] Tao model `AiJob`
 - [ ] Tao queue job base cho AI processing
 - [ ] Luu trang thai AI job: pending, processing, completed, failed
-- [ ] Luu input file id
-- [ ] Luu output JSON/text
-- [ ] Luu error message khi fail
-- [ ] Luu credit cost
+- [x] Luu `ai_upload_id`
+- [x] Luu `job_type`: analyze, transcribe, summarize, translate, extract, chat_index
+- [x] Luu `provider`: openai
+- [x] Luu `model`
+- [x] Luu `input_options` JSON: language, target_language, extraction_type, prompt
+- [x] Luu output JSON/text
+- [x] Luu error message khi fail
+- [x] Luu credit cost
+- [x] Luu `started_at`, `completed_at`
 - [ ] Chi cap nhat credit khi job thanh cong
-- [ ] Tao endpoint xem trang thai AI job
-- [ ] Tao endpoint xem ket qua AI job
+- [x] Tao endpoint xem trang thai AI job
+- [x] Tao endpoint xem ket qua AI job
+- [x] Tao provider abstraction cho OpenAI/Gemini/local
 
-### AI Transcription
+### AI Outputs
+
+- [x] Tao migration `ai_outputs`
+- [x] Tao model `AiOutput`
+- [x] Luu `ai_upload_id`
+- [x] Luu `ai_job_id`
+- [x] Luu `output_type`: text_preview, transcript, summary, translation, extraction, thumbnail, subtitles, chapters
+- [x] Luu `title`
+- [x] Luu `content_text` nullable
+- [x] Luu `content_json` nullable
+- [x] Luu `storage_disk` nullable cho output file
+- [x] Luu `storage_path` nullable cho thumbnail/subtitle/export
+- [x] Luu `metadata` JSON
+- [x] Tao endpoint list outputs theo AI upload
+- [x] Tao endpoint xem mot output
+- [ ] Tao endpoint download output file neu co
+
+### AI Type Detection and Routing
+
+- [ ] Detect text file: `txt`, `md`, `json`
+- [ ] Detect document file: `pdf`, `docx`
+- [ ] Detect audio file: `mp3`, `wav`, `m4a`
+- [ ] Detect video file: `mp4`, `mov`, `webm`
+- [ ] Map file_kind sang actions hop le
+- [ ] Tu dong goi workflow mac dinh theo file_kind neu user chon "Analyze"
+- [ ] Tra ve loi ro rang neu file chua ho tro
+
+### AI Text Processing
+
+- [ ] Tao preview noi dung text gioi han kich thuoc
+- [ ] Tao endpoint view full content co gioi han an toan
+- [ ] Format JSON preview neu file la JSON
+- [ ] Xu ly encoding text co ban
+- [ ] Tao summary tu text file
+- [ ] Dich text file English -> Vietnamese
+- [ ] Dich text file Vietnamese -> English
+
+### AI Document Processing
+
+- [ ] Extract text tu PDF neu co text layer
+- [ ] Extract text tu DOCX
+- [ ] Luu page_count vao metadata
+- [ ] Tao summary tu document
+- [ ] Tao key points tu document
+- [ ] Tao action items tu document neu phu hop
+- [ ] Chuan bi OCR cho PDF scan/image trong tuong lai
+
+### AI Audio Processing
 
 - [ ] Ho tro transcription cho MP3
-- [ ] Ho tro transcription cho MP4
+- [ ] Ho tro transcription cho WAV
+- [ ] Ho tro transcription cho M4A
+- [ ] Luu duration vao metadata
 - [ ] Goi OpenAI Speech-to-Text
 - [ ] Detect English
 - [ ] Detect Vietnamese
 - [ ] Luu full transcript
+- [ ] Tao transcript co timestamp neu provider ho tro
+- [ ] Tao summary tu transcript
+- [ ] Tao key points tu transcript
+- [ ] Tao action items tu transcript
 - [ ] Chuan bi schema cho speaker identification trong tuong lai
 
-### AI Summary
+### AI Video Processing
 
+- [ ] Ho tro upload MP4
+- [ ] Ho tro upload MOV
+- [ ] Ho tro upload WEBM
+- [ ] Luu duration vao metadata
+- [ ] Luu width/height vao metadata
+- [ ] Extract audio track de transcription
+- [ ] Tao thumbnail/preview frame luu vao `ai_outputs`
+- [ ] Tao transcript tu audio track
 - [ ] Tao summary tu transcript
-- [ ] Tao key points
-- [ ] Tao action items
-- [ ] Ho tro summary tu text file
+- [ ] Tao chapters/timeline neu transcript co timestamp
+- [ ] Tao action items neu noi dung la meeting/lesson
 
 ### AI Translation
 
 - [ ] Dich transcript English -> Vietnamese
 - [ ] Dich transcript Vietnamese -> English
-- [ ] Dich text file English -> Vietnamese
-- [ ] Dich text file Vietnamese -> English
+- [ ] Dich document text English -> Vietnamese
+- [ ] Dich document text Vietnamese -> English
+- [ ] Dich subtitles/transcript theo timestamp neu co
 
 API du kien:
 
-- [ ] `POST /api/v1/files/{id}/ai/transcribe`
-- [ ] `POST /api/v1/files/{id}/ai/summarize`
-- [ ] `POST /api/v1/files/{id}/ai/translate`
+- [ ] `POST /api/v1/ai/uploads`
+- [ ] `GET /api/v1/ai/uploads`
+- [ ] `GET /api/v1/ai/uploads/{id}`
+- [ ] `DELETE /api/v1/ai/uploads/{id}`
+- [ ] `POST /api/v1/ai/uploads/{id}/analyze`
+- [ ] `POST /api/v1/ai/uploads/{id}/transcribe`
+- [ ] `POST /api/v1/ai/uploads/{id}/summarize`
+- [ ] `POST /api/v1/ai/uploads/{id}/translate`
+- [ ] `POST /api/v1/ai/uploads/{id}/extract`
+- [ ] `GET /api/v1/ai/uploads/{id}/outputs`
+- [ ] `GET /api/v1/ai/outputs/{id}`
 - [ ] `GET /api/v1/ai/jobs/{id}`
 - [ ] `GET /api/v1/ai/jobs/{id}/result`
 
@@ -337,8 +422,9 @@ API du kien:
 - [ ] Tao model `FileConversation`
 - [ ] Tao migration `file_messages`
 - [ ] Tao model `FileMessage`
-- [ ] Tao endpoint tao conversation theo file
-- [ ] Tao endpoint gui cau hoi ve file
+- [ ] Gan conversation voi `ai_upload_id`
+- [ ] Tao endpoint tao conversation theo AI upload
+- [ ] Tao endpoint gui cau hoi ve AI upload
 - [ ] Tao endpoint lich su chat
 - [ ] Tru credit moi cau hoi thanh cong
 - [ ] Ho tro hoi document text
@@ -366,11 +452,11 @@ API du kien:
 
 API du kien:
 
-- [ ] `POST /api/v1/files/{id}/conversations`
-- [ ] `GET /api/v1/files/{id}/conversations`
+- [ ] `POST /api/v1/ai/uploads/{id}/conversations`
+- [ ] `GET /api/v1/ai/uploads/{id}/conversations`
 - [ ] `POST /api/v1/conversations/{id}/messages`
 - [ ] `GET /api/v1/conversations/{id}/messages`
-- [ ] `POST /api/v1/files/{id}/ai/extract`
+- [ ] `POST /api/v1/ai/uploads/{id}/extract`
 
 ---
 
@@ -524,7 +610,8 @@ API du kien:
 - [ ] Dinh nghia auth schemas
 - [ ] Dinh nghia file schemas
 - [ ] Dinh nghia share link schemas
-- [ ] Dinh nghia preview schemas
+- [ ] Dinh nghia AI upload schemas
+- [ ] Dinh nghia AI output schemas
 - [ ] Dinh nghia wallet schemas
 - [ ] Dinh nghia subscription schemas
 - [ ] Dinh nghia payment schemas
@@ -603,9 +690,6 @@ API du kien:
 - [ ] Authentication
 - [ ] File Upload Core
 - [ ] Public Share Links
-- [ ] Text Preview
-- [ ] Audio Preview
-- [ ] Video Preview
 - [ ] Basic OpenAPI docs
 
 ### Phase 2 - Monetization
@@ -618,7 +702,13 @@ API du kien:
 ### Phase 3 - AI Foundation
 
 - [ ] AI Job Infrastructure
-- [ ] AI Transcription
+- [ ] AI Upload Workspace
+- [ ] AI Outputs
+- [ ] AI Type Detection and Routing
+- [ ] AI Text Processing
+- [ ] AI Document Processing
+- [ ] AI Audio Processing
+- [ ] AI Video Processing
 - [ ] AI Summary
 - [ ] AI Translation
 

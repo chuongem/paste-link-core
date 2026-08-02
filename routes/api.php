@@ -1,5 +1,8 @@
 <?php
 
+use App\Http\Controllers\Api\V1\AiJobController;
+use App\Http\Controllers\Api\V1\AiOutputController;
+use App\Http\Controllers\Api\V1\AiUploadController;
 use App\Http\Controllers\Api\V1\AuthController;
 use App\Http\Controllers\Api\V1\FileController;
 use App\Http\Controllers\Api\V1\ShareLinkController;
@@ -31,8 +34,25 @@ Route::prefix('v1')->group(function (): void {
         Route::get('/', [FileController::class, 'index']);
         Route::post('/', [FileController::class, 'store']);
         Route::post('/{id}/share-links', [ShareLinkController::class, 'store'])->whereNumber('id');
+        Route::post('/{id}/send-to-ai', [FileController::class, 'sendToAi'])->whereNumber('id');
         Route::get('/{id}', [FileController::class, 'show'])->whereNumber('id');
         Route::delete('/{id}', [FileController::class, 'destroy'])->whereNumber('id');
+    });
+
+    Route::middleware('auth:sanctum')->prefix('ai')->group(function (): void {
+        Route::get('/uploads', [AiUploadController::class, 'index']);
+        Route::post('/uploads', [AiUploadController::class, 'store']);
+        Route::get('/uploads/{id}', [AiUploadController::class, 'show'])->whereNumber('id');
+        Route::delete('/uploads/{id}', [AiUploadController::class, 'destroy'])->whereNumber('id');
+        Route::post('/uploads/{id}/analyze', [AiUploadController::class, 'analyze'])->whereNumber('id');
+        Route::post('/uploads/{id}/transcribe', [AiUploadController::class, 'transcribe'])->whereNumber('id');
+        Route::post('/uploads/{id}/summarize', [AiUploadController::class, 'summarize'])->whereNumber('id');
+        Route::post('/uploads/{id}/translate', [AiUploadController::class, 'translate'])->whereNumber('id');
+        Route::post('/uploads/{id}/extract', [AiUploadController::class, 'extract'])->whereNumber('id');
+        Route::get('/uploads/{id}/outputs', [AiUploadController::class, 'outputs'])->whereNumber('id');
+        Route::get('/outputs/{id}', [AiOutputController::class, 'show'])->whereNumber('id');
+        Route::get('/jobs/{id}', [AiJobController::class, 'show'])->whereNumber('id');
+        Route::get('/jobs/{id}/result', [AiJobController::class, 'result'])->whereNumber('id');
     });
 
     Route::middleware('auth:sanctum')->prefix('share-links')->group(function (): void {

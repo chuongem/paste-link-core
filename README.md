@@ -26,7 +26,7 @@ PasteLink aims to become a platform where users can:
 
 - Upload files instantly
 - Share files securely
-- Preview content directly in the browser
+- Send files to a separate AI workspace when analysis is needed
 - Process files using AI
 - Monetize advanced AI features through subscriptions and credits
 - Build a personal knowledge workspace around uploaded content
@@ -96,9 +96,44 @@ Features:
 
 ---
 
-### File Preview
+### GetLink File Delivery
 
-#### Text Files
+The upload and share-link flow stays focused on:
+
+- Upload
+- Copy Link
+- Open Link
+- QR Code
+- Download
+
+AI analysis is handled by the separate AI workspace. Users can upload directly in AI or send an existing uploaded file to AI.
+
+---
+
+## AI Features
+
+### AI Upload Workspace
+
+Users upload files into the AI tab for analysis. AI uploads do not automatically create public share links.
+
+Supported file groups:
+
+- Text: txt, md, json
+- Documents: pdf, docx
+- Audio: mp3, wav, m4a
+- Video: mp4, mov, webm
+
+Stored data:
+
+- Original file metadata
+- Detected file kind
+- Processing status
+- Extracted metadata such as duration, dimensions, page count, encoding, or word count
+- Generated outputs such as transcript, summary, translation, extraction, thumbnail, subtitles, or chapters
+
+---
+
+### AI Text Processing
 
 Supported:
 
@@ -109,10 +144,32 @@ Supported:
 Features:
 
 - Preview first section
-- Fixed preview area
-- View Full Content
+- Safe full content view
+- JSON formatting
+- Basic encoding handling
+- Summary
+- Translation
 
-#### Audio Files
+---
+
+### AI Document Processing
+
+Supported:
+
+- PDF
+- DOCX
+
+Features:
+
+- Text extraction
+- Page metadata
+- Summary
+- Key points
+- Action items
+
+---
+
+### AI Audio Processing
 
 Supported:
 
@@ -122,10 +179,22 @@ Supported:
 
 Features:
 
-- Embedded Audio Player
-- Metadata Display
+- Speech-to-Text
+- English Detection
+- Vietnamese Detection
+- Timestamped transcript when supported
+- Summary
+- Key Points
+- Action Items
 
-#### Video Files
+Output:
+
+- Full Transcript
+- Speaker Identification (future)
+
+---
+
+### AI Video Processing
 
 Supported:
 
@@ -135,31 +204,13 @@ Supported:
 
 Features:
 
-- Embedded Video Player
-- Thumbnail Generation (future)
-
----
-
-## AI Features
-
-### AI Transcription
-
-Supported:
-
-- MP3
-- MP4
-
-Features:
-
+- Audio extraction
 - Speech-to-Text
-- English Detection
-- Vietnamese Detection
-- Multi-language Support (future)
-
-Output:
-
-- Full Transcript
-- Speaker Identification (future)
+- Thumbnail frame generation
+- Transcript
+- Summary
+- Chapters or timeline when timestamps are available
+- Action Items
 
 ---
 
@@ -487,9 +538,6 @@ pastelink/
 - Clipboard Upload
 - Drag and Drop Upload
 - Public Share Links
-- Text Preview
-- Audio Preview
-- Video Preview
 
 ### Phase 2 - Monetization
 
@@ -500,7 +548,11 @@ pastelink/
 
 ### Phase 3 - AI Foundation
 
-- AI Transcription
+- AI Upload Workspace
+- AI Text Processing
+- AI Document Processing
+- AI Audio Processing
+- AI Video Processing
 - AI Summary
 - AI Translation
 
@@ -522,7 +574,7 @@ pastelink/
 
 ## Project Description
 
-PasteLink helps users upload files instantly, generate shareable links, preview content directly in the browser, and unlock AI-powered insights from documents, audio, and video.
+PasteLink helps users upload files instantly, generate shareable links, and use a separate AI workspace to unlock insights from documents, audio, and video.
 
 ---
 
